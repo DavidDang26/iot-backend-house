@@ -1,5 +1,6 @@
 import { PASSWORD_NOT_MATCH, USER_NOT_FOUND } from "../constants/errorMessages";
-import { getStateForUser } from "../data/users";
+import { User } from "../data/models/User";
+import { getStateForUser, updateUser } from "../data/users";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -23,6 +24,12 @@ export const checkLogin = async (username: string, password: string) => {
   };
 };
 
+export const updateUserData = async (email: string, data: Partial<User>) => {
+  const rawEmail = email.replace(".", "-");
+  return updateUser(rawEmail, data);
+};
+
 export default {
-  checkLogin
+  checkLogin,
+  updateUserData
 };

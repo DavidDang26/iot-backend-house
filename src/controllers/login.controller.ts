@@ -1,6 +1,7 @@
 import * as express from "express";
 import userService from "../services/userService";
 import {
+  ENTER_ERROR,
   INTERNAL_SERVER_ERROR,
   PASSWORD_NOT_MATCH,
   USER_NOT_FOUND
@@ -22,6 +23,10 @@ class LoginController {
   private async checkLogin(req: express.Request, res: express.Response) {
     try {
       const { email, password } = req.body;
+      if (!email || !password)
+        return res.status(401).send({
+          message: ENTER_ERROR
+        });
       const user = await userService.checkLogin(email, password);
       return res.status(200).send({
         message: LOGIN_SUCCESS,

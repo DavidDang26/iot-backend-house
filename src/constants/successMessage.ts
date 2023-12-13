@@ -8,8 +8,4 @@ export const UPDATE_DEVICE_DESCRIPTION_SUCCESSFULLY =
 export const UPDATE_DEVICE_STATUS_SUCCESSFULLY =
   "Update device status successfully";
 export const GET_STATISTICS_SUCCESSFULLY = "Get statistics successfully";
-
-export default {
-  LOGIN_SUCCESS,
-  GET_ALL_DEVICE_SUCCESS
-};
+export const UPDATE_USER_DATA_SUCCESSFULLY = "Update user data successfully";

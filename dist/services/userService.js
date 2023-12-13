@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkLogin = void 0;
+exports.updateUserData = exports.checkLogin = void 0;
 const errorMessages_1 = require("../constants/errorMessages");
 const users_1 = require("../data/users");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -25,7 +25,13 @@ const checkLogin = async (username, password) => {
     };
 };
 exports.checkLogin = checkLogin;
+const updateUserData = async (email, data) => {
+    const rawEmail = email.replace(".", "-");
+    return (0, users_1.updateUser)(rawEmail, data);
+};
+exports.updateUserData = updateUserData;
 exports.default = {
-    checkLogin: exports.checkLogin
+    checkLogin: exports.checkLogin,
+    updateUserData: exports.updateUserData
 };
 //# sourceMappingURL=userService.js.map

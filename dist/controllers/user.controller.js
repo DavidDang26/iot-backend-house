@@ -27,50 +27,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = __importStar(require("express"));
-const userService_1 = __importDefault(require("../services/userService"));
 const errorMessages_1 = require("../constants/errorMessages");
+const userService_1 = __importDefault(require("../services/userService"));
 const successMessage_1 = require("../constants/successMessage");
-class LoginController {
+class UserController {
     constructor() {
-        this.path = "/login";
+        this.path = "/api/user";
         this.router = express.Router();
         this.initializeRoutes();
     }
     initializeRoutes() {
-        this.router.post(this.path, this.checkLogin);
+        this.router.put(`${this.path}/edit`, this.updateUser);
     }
-    async checkLogin(req, res) {
+    async updateUser(req, res) {
         try {
-            const { email, password } = req.body;
-            if (!email || !password)
+            const data = req.body;
+            if (!data.email)
                 return res.status(401).send({
-                    message: errorMessages_1.ENTER_ERROR
+                    message: errorMessages_1.ENTER_EMAIL_ERROR
                 });
-            const user = await userService_1.default.checkLogin(email, password);
-            return res.status(200).send({
-                message: successMessage_1.LOGIN_SUCCESS,
-                data: user.data,
-                accessToken: user.accessToken
+            await userService_1.default.updateUserData(data.email, data);
+            res.status(200).send({
+                message: successMessage_1.UPDATE_USER_DATA_SUCCESSFULLY,
+                data
             });
         }
         catch (error) {
-            if (error.message) {
-                switch (error.message) {
-                    case errorMessages_1.USER_NOT_FOUND:
-                        return res.status(400).send({
-                            message: error.message
-                        });
-                    case errorMessages_1.PASSWORD_NOT_MATCH:
-                        return res.status(401).send({
-                            message: error.message
-                        });
-                }
-            }
             return res.status(500).send({
                 message: errorMessages_1.INTERNAL_SERVER_ERROR
             });
         }
     }
 }
-exports.default = LoginController;
-//# sourceMappingURL=login.controller.js.map
+exports.default = UserController;
+//# sourceMappingURL=user.controller.js.map

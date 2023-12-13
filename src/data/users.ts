@@ -15,7 +15,7 @@ export const addUser = (user: User) => {
   } else customChild.set(user);
 };
 
-export const updateUser = (key: string, data) =>
+export const updateUser = (key: string, data: Partial<User>) =>
   users().child(key).update(data);
 
 export const deleteUser = (key: string) => users().child(key).remove();
