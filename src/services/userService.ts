@@ -10,7 +10,8 @@ export const checkLogin = async (username: string, password: string) => {
   if (!check) throw new Error(PASSWORD_NOT_MATCH);
   const data = {
     ...user,
-    password: undefined
+    password: undefined,
+    email: user.email.replace("-", ".")
   };
   const accessToken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "300s"

@@ -15,7 +15,7 @@ const checkLogin = async (username, password) => {
     const check = bcrypt_1.default.compareSync(password, user.password);
     if (!check)
         throw new Error(errorMessages_1.PASSWORD_NOT_MATCH);
-    const data = Object.assign(Object.assign({}, user), { password: undefined });
+    const data = Object.assign(Object.assign({}, user), { password: undefined, email: user.email.replace("-", ".") });
     const accessToken = jsonwebtoken_1.default.sign(data, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "300s"
     });
