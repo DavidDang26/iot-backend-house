@@ -8,6 +8,11 @@ import {
 } from "../constants/successMessage";
 import { INTERNAL_SERVER_ERROR } from "../constants/errorMessages";
 import deviceService from "../services/deviceService";
+import { sendMessage } from "../services/mqttService";
+import { getDeviceById } from "../data/devices";
+import Device from "../data/models/Device";
+import DeviceTypeEnum, { deviceMapping } from "../enum/DeviceTypeEnum";
+import { getCurrentCount } from "../data/count";
 
 class DeviceController {
   path = "/api/device";
@@ -101,8 +106,17 @@ class DeviceController {
     res: express.Response
   ) {
     try {
-      const { deviceId, isOn } = req.body;
+      const { deviceId, isOn, payload } = req.body;
+      const device = (await getDeviceById(deviceId)) as Device;
       await deviceService.updateDeviceStatus(deviceId, isOn);
+      const count = await getCurrentCount();
+      const message = {
+        id: count,
+        device: deviceMapping[device.type],
+        command: isOn ? "on" : "off",
+        ledIndex: device?.ledIndex && device.ledIndex
+      };
+      sendMessage(process.env.TOPIC, message);
       return res.status(200).send({
         message: UPDATE_DEVICE_STATUS_SUCCESSFULLY,
         data: {
@@ -111,6 +125,7 @@ class DeviceController {
         }
       });
     } catch (error) {
+      console.error(error);
       return res.status(500).send({
         message: INTERNAL_SERVER_ERROR
       });

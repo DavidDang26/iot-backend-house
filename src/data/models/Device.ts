@@ -5,6 +5,7 @@ type Device = {
   type: DeviceTypeEnum;
   isOn: boolean;
   description: string;
+  ledIndex?: number;
 };
 
 export default Device;

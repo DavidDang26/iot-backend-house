@@ -30,6 +30,10 @@ const express = __importStar(require("express"));
 const successMessage_1 = require("../constants/successMessage");
 const errorMessages_1 = require("../constants/errorMessages");
 const deviceService_1 = __importDefault(require("../services/deviceService"));
+const mqttService_1 = require("../services/mqttService");
+const devices_1 = require("../data/devices");
+const DeviceTypeEnum_1 = require("../enum/DeviceTypeEnum");
+const count_1 = require("../data/count");
 class DeviceController {
     constructor() {
         this.path = "/api/device";
@@ -113,8 +117,17 @@ class DeviceController {
     }
     async updateDeviceStatus(req, res) {
         try {
-            const { deviceId, isOn } = req.body;
+            const { deviceId, isOn, payload } = req.body;
+            const device = (await (0, devices_1.getDeviceById)(deviceId));
             await deviceService_1.default.updateDeviceStatus(deviceId, isOn);
+            const count = await (0, count_1.getCurrentCount)();
+            const message = {
+                id: count,
+                device: DeviceTypeEnum_1.deviceMapping[device.type],
+                command: isOn ? "on" : "off",
+                ledIndex: (device === null || device === void 0 ? void 0 : device.ledIndex) && device.ledIndex
+            };
+            (0, mqttService_1.sendMessage)(process.env.TOPIC, message);
             return res.status(200).send({
                 message: successMessage_1.UPDATE_DEVICE_STATUS_SUCCESSFULLY,
                 data: {
@@ -124,6 +137,7 @@ class DeviceController {
             });
         }
         catch (error) {
+            console.error(error);
             return res.status(500).send({
                 message: errorMessages_1.INTERNAL_SERVER_ERROR
             });
