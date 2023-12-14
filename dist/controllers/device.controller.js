@@ -32,7 +32,7 @@ const errorMessages_1 = require("../constants/errorMessages");
 const deviceService_1 = __importDefault(require("../services/deviceService"));
 const mqttService_1 = require("../services/mqttService");
 const devices_1 = require("../data/devices");
-const DeviceTypeEnum_1 = require("../enum/DeviceTypeEnum");
+const DeviceTypeEnum_1 = __importStar(require("../enum/DeviceTypeEnum"));
 const count_1 = require("../data/count");
 class DeviceController {
     constructor() {
@@ -117,17 +117,20 @@ class DeviceController {
     }
     async updateDeviceStatus(req, res) {
         try {
-            const { deviceId, isOn, payload } = req.body;
+            const { deviceId, isOn, message } = req.body;
             const device = (await (0, devices_1.getDeviceById)(deviceId));
             await deviceService_1.default.updateDeviceStatus(deviceId, isOn);
             const count = await (0, count_1.getCurrentCount)();
-            const message = {
+            const messageSent = {
                 id: count,
                 device: DeviceTypeEnum_1.deviceMapping[device.type],
                 command: isOn ? "on" : "off",
-                ledIndex: (device === null || device === void 0 ? void 0 : device.ledIndex) && device.ledIndex
+                ledIndex: (device === null || device === void 0 ? void 0 : device.ledIndex) && device.ledIndex,
+                message
             };
-            (0, mqttService_1.sendMessage)(process.env.TOPIC, message);
+            if (device.type === DeviceTypeEnum_1.default.TV)
+                messageSent["command"] = "print";
+            (0, mqttService_1.sendMessage)(process.env.TOPIC, messageSent);
             return res.status(200).send({
                 message: successMessage_1.UPDATE_DEVICE_STATUS_SUCCESSFULLY,
                 data: {

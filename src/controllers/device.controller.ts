@@ -106,17 +106,19 @@ class DeviceController {
     res: express.Response
   ) {
     try {
-      const { deviceId, isOn, payload } = req.body;
+      const { deviceId, isOn, message } = req.body;
       const device = (await getDeviceById(deviceId)) as Device;
       await deviceService.updateDeviceStatus(deviceId, isOn);
       const count = await getCurrentCount();
-      const message = {
+      const messageSent = {
         id: count,
         device: deviceMapping[device.type],
         command: isOn ? "on" : "off",
-        ledIndex: device?.ledIndex && device.ledIndex
+        ledIndex: device?.ledIndex && device.ledIndex,
+        message
       };
-      sendMessage(process.env.TOPIC, message);
+      if (device.type === DeviceTypeEnum.TV) messageSent["command"] = "print";
+      sendMessage(process.env.TOPIC, messageSent);
       return res.status(200).send({
         message: UPDATE_DEVICE_STATUS_SUCCESSFULLY,
         data: {

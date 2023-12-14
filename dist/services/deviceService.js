@@ -23,7 +23,7 @@ const deleteDevice = async (deviceId) => devices_1.default.deleteDevice(deviceId
 exports.deleteDevice = deleteDevice;
 const updateDeviceDescription = async (deviceId, description) => devices_1.default.updateDevice(deviceId, { description });
 exports.updateDeviceDescription = updateDeviceDescription;
-const updateDeviceStatus = async (deviceId, isOn) => devices_1.default.updateDevice(deviceId, { isOn });
+const updateDeviceStatus = async (deviceId, isOn = false) => devices_1.default.updateDevice(deviceId, { isOn });
 exports.updateDeviceStatus = updateDeviceStatus;
 exports.default = {
     getAllDevice: exports.getAllDevice,

@@ -26,7 +26,7 @@ export const updateDeviceDescription = async (
   description: string
 ) => devices.updateDevice(deviceId, { description });
 
-export const updateDeviceStatus = async (deviceId: string, isOn: boolean) =>
+export const updateDeviceStatus = async (deviceId: string, isOn = false) =>
   devices.updateDevice(deviceId, { isOn });
 
 export default {
