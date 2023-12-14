@@ -15,7 +15,7 @@ export const checkLogin = async (username: string, password: string) => {
     email: user.email.replace("-", ".")
   };
   const accessToken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "300s"
+    expiresIn: "7d"
   });
 
   return {
