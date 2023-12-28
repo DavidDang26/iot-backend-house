@@ -2,11 +2,16 @@ import devices from "../data/devices";
 import Device from "../data/models/Device";
 import { v4 as uuidv4 } from "uuid";
 
-export const getAllDevice = async () => {
+export const getAllDevice = async (ownerEmail: string) => {
   const allDevice = await devices.getAllDevice();
-  return !!allDevice
+  const parseDevice = !!allDevice
     ? Object.keys(allDevice).map((deviceId) => allDevice[deviceId])
     : [];
+
+  const result = parseDevice.filter(
+    (device) => device.ownerEmail === ownerEmail
+  );
+  return result;
 };
 
 export const addDevice = async (device: Device) => {

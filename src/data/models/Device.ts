@@ -6,6 +6,7 @@ type Device = {
   isOn: boolean;
   description: string;
   ledIndex?: number;
+  ownerEmail: string;
 };
 
 export default Device;

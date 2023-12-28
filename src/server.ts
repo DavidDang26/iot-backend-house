@@ -3,6 +3,7 @@ import LoginController from "./controllers/login.controller";
 import DeviceController from "./controllers/device.controller";
 import StatisticController from "./controllers/statistic.controller";
 import UserController from "./controllers/user.controller";
+import { receiveAnotherMessage, receiveMessage } from "./services/mqttService";
 
 import "dotenv/config";
 
@@ -16,5 +17,8 @@ const app = new App(
   ],
   port
 );
+
+receiveMessage();
+receiveAnotherMessage();
 
 app.listen();

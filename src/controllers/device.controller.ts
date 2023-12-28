@@ -13,6 +13,7 @@ import { getDeviceById } from "../data/devices";
 import Device from "../data/models/Device";
 import DeviceTypeEnum, { deviceMapping } from "../enum/DeviceTypeEnum";
 import { getCurrentCount } from "../data/count";
+import { getUserByEmail } from "../services/userService";
 
 class DeviceController {
   path = "/api/device";
@@ -32,7 +33,8 @@ class DeviceController {
 
   private async getAllDevices(req: express.Request, res: express.Response) {
     try {
-      const allDevices = await deviceService.getAllDevice();
+      const { ownerEmail } = req.query;
+      const allDevices = await deviceService.getAllDevice(ownerEmail as string);
       return res.status(200).send({
         message: GET_ALL_DEVICE_SUCCESS,
         data: allDevices
@@ -46,11 +48,12 @@ class DeviceController {
 
   private async addDevice(req: express.Request, res: express.Response) {
     try {
-      const { type, isOn, description } = req.body;
+      const { type, isOn, description, ownerEmail } = req.body;
       const newDevice = await deviceService.addDevice({
         type,
         isOn,
-        description
+        description,
+        ownerEmail
       });
       return res.status(201).send({
         message: NEW_DEVICE_CREATED_SUCCESSFULLY,
@@ -108,7 +111,12 @@ class DeviceController {
     try {
       const { deviceId, isOn, message } = req.body;
       const device = (await getDeviceById(deviceId)) as Device;
+      console.log(
+        "🚀 ~ file: device.controller.ts:114 ~ DeviceController ~ device:",
+        device
+      );
       await deviceService.updateDeviceStatus(deviceId, isOn);
+      const user = await getUserByEmail(device.ownerEmail);
       const count = await getCurrentCount();
       const messageSent = {
         id: count,
@@ -118,7 +126,7 @@ class DeviceController {
         message
       };
       if (device.type === DeviceTypeEnum.TV) messageSent["command"] = "print";
-      sendMessage(process.env.TOPIC, messageSent);
+      sendMessage(user.topic, messageSent);
       return res.status(200).send({
         message: UPDATE_DEVICE_STATUS_SUCCESSFULLY,
         data: {
